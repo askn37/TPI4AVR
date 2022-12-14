@@ -1,0 +1,201 @@
+--- src/jtagmkII.c_orig	2022-06-26 21:07:29.000000000 +0900
++++ src/jtagmkII.c	2022-06-26 21:13:21.000000000 +0900
+@@ -890,7 +890,7 @@
+   int status, len;
+   unsigned char buf[6], *resp, c;
+ 
+-  if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI)) {
++  if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI)) {
+     buf[0] = CMND_XMEGA_ERASE;
+     buf[1] = XMEGA_ERASE_CHIP;
+     memset(buf + 2, 0, 4);      /* address of area to be erased */
+@@ -901,7 +901,7 @@
+   }
+   avrdude_message(MSG_NOTICE2, "%s: jtagmkII_chip_erase(): Sending %schip erase command: ",
+                     progname,
+-                    (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))? "Xmega ": "");
++                    (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))? "Xmega ": "");
+   jtagmkII_send(pgm, buf, len);
+ 
+   status = jtagmkII_recv(pgm, &resp);
+@@ -927,7 +927,7 @@
+     return -1;
+   }
+ 
+-  if (!(p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI)))
++  if (!(p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI)))
+       pgm->initialize(pgm, p);
+ 
+   return 0;
+@@ -985,7 +985,7 @@
+     }
+   }
+   sendbuf.dd.ucCacheType =
+-    (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))? 0x02 /* ATxmega */: 0x00;
++    (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))? 0x02 /* ATxmega */: 0x00;
+ 
+   avrdude_message(MSG_NOTICE2, "%s: jtagmkII_set_devdescr(): "
+ 	    "Sending set device descriptor command: ",
+@@ -1320,7 +1320,7 @@
+       ok = 1;
+   } else if (pgm->flag & PGM_FL_IS_PDI) {
+     ifname = "PDI";
+-    if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))
++    if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))
+       ok = 1;
+   } else {
+     ifname = "JTAG";
+@@ -1366,20 +1366,20 @@
+    * mode from JTAG to JTAG_XMEGA.
+    */
+   if ((pgm->flag & PGM_FL_IS_JTAG) &&
+-      (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))) {
++      (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))) {
+     if (jtagmkII_getsync(pgm, EMULATOR_MODE_JTAG_XMEGA) < 0)
+       return -1;
+   }
+   /*
+    * Must set the device descriptor before entering programming mode.
+    */
+-  if (PDATA(pgm)->fwver >= 0x700 && (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI)) != 0)
++  if (PDATA(pgm)->fwver >= 0x700 && (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI)) != 0)
+     jtagmkII_set_xmega_params(pgm, p);
+   else
+     jtagmkII_set_devdescr(pgm, p);
+ 
+   PDATA(pgm)->boot_start = ULONG_MAX;
+-  if ((p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))) {
++  if ((p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))) {
+     /*
+      * Find out where the border between application and boot area
+      * is.
+@@ -1421,7 +1421,7 @@
+   }
+   PDATA(pgm)->flash_pageaddr = PDATA(pgm)->eeprom_pageaddr = (unsigned long)-1L;
+ 
+-  if (PDATA(pgm)->fwver >= 0x700 && (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))) {
++  if (PDATA(pgm)->fwver >= 0x700 && (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))) {
+     /*
+      * Work around for
+      * https://savannah.nongnu.org/bugs/index.php?37942
+@@ -1438,7 +1438,7 @@
+       return -1;
+   }
+ 
+-  if ((pgm->flag & PGM_FL_IS_JTAG) && !(p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))) {
++  if ((pgm->flag & PGM_FL_IS_JTAG) && !(p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))) {
+     strcpy(hfuse.desc, "hfuse");
+     if (jtagmkII_read_byte(pgm, p, &hfuse, 1, &b) < 0)
+       return -1;
+@@ -1912,7 +1912,7 @@
+   avrdude_message(MSG_NOTICE2, "%s: jtagmkII_page_erase(.., %s, 0x%x)\n",
+ 	    progname, m->desc, addr);
+ 
+-  if (!(p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))) {
++  if (!(p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))) {
+     avrdude_message(MSG_INFO, "%s: jtagmkII_page_erase: not an Xmega device\n",
+ 	    progname);
+     return -1;
+@@ -2027,7 +2027,7 @@
+   if (strcmp(m->desc, "flash") == 0) {
+     PDATA(pgm)->flash_pageaddr = (unsigned long)-1L;
+     cmd[1] = jtagmkII_memtype(pgm, p, addr);
+-    if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))
++    if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))
+       /* dynamically decide between flash/boot memtype */
+       dynamic_memtype = 1;
+   } else if (strcmp(m->desc, "eeprom") == 0) {
+@@ -2046,14 +2046,14 @@
+       free(cmd);
+       return n_bytes;
+     }
+-    cmd[1] = (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI)) ? MTYPE_EEPROM : MTYPE_EEPROM_PAGE;
++    cmd[1] = (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI)) ? MTYPE_EEPROM : MTYPE_EEPROM_PAGE;
+     PDATA(pgm)->eeprom_pageaddr = (unsigned long)-1L;
+   } else if (strcmp(m->desc, "usersig") == 0 ||
+              strcmp(m->desc, "userrow") == 0) {
+     cmd[1] = MTYPE_USERSIG;
+   } else if (strcmp(m->desc, "boot") == 0) {
+     cmd[1] = MTYPE_BOOT_FLASH;
+-  } else if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI)) {
++  } else if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI)) {
+     cmd[1] = MTYPE_FLASH;
+   } else {
+     cmd[1] = MTYPE_SPM;
+@@ -2155,11 +2155,11 @@
+   cmd[0] = CMND_READ_MEMORY;
+   if (strcmp(m->desc, "flash") == 0) {
+     cmd[1] = jtagmkII_memtype(pgm, p, addr);
+-    if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI))
++    if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI))
+       /* dynamically decide between flash/boot memtype */
+       dynamic_memtype = 1;
+   } else if (strcmp(m->desc, "eeprom") == 0) {
+-    cmd[1] = (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI)) ? MTYPE_EEPROM : MTYPE_EEPROM_PAGE;
++    cmd[1] = (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI)) ? MTYPE_EEPROM : MTYPE_EEPROM_PAGE;
+     if (pgm->flag & PGM_FL_IS_DW)
+       return -1;
+   } else if (strcmp(m->desc, "prodsig") == 0) {
+@@ -2169,7 +2169,7 @@
+     cmd[1] = MTYPE_USERSIG;
+   } else if (strcmp(m->desc, "boot") == 0) {
+     cmd[1] = MTYPE_BOOT_FLASH;
+-  } else if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI)) {
++  } else if (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI)) {
+     cmd[1] = MTYPE_FLASH;
+   } else {
+     cmd[1] = MTYPE_SPM;
+@@ -2254,7 +2254,7 @@
+   unsupp = 0;
+ 
+   addr += mem->offset;
+-  cmd[1] = ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI) ) ? MTYPE_FLASH : MTYPE_FLASH_PAGE;
++  cmd[1] = ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI) ) ? MTYPE_FLASH : MTYPE_FLASH_PAGE;
+   if (strcmp(mem->desc, "flash") == 0 ||
+       strcmp(mem->desc, "application") == 0 ||
+       strcmp(mem->desc, "apptable") == 0 ||
+@@ -2264,7 +2264,7 @@
+     paddr_ptr = &PDATA(pgm)->flash_pageaddr;
+     cache_ptr = PDATA(pgm)->flash_pagecache;
+   } else if (strcmp(mem->desc, "eeprom") == 0) {
+-    if ( (pgm->flag & PGM_FL_IS_DW) || ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI) ) ) {
++    if ( (pgm->flag & PGM_FL_IS_DW) || ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI) ) ) {
+       /* debugWire cannot use page access for EEPROM */
+       cmd[1] = MTYPE_EEPROM;
+     } else {
+@@ -2431,7 +2431,7 @@
+ 
+   writedata = data;
+   cmd[0] = CMND_WRITE_MEMORY;
+-  cmd[1] = ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI) ) ? MTYPE_FLASH : MTYPE_SPM;
++  cmd[1] = ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI) ) ? MTYPE_FLASH : MTYPE_SPM;
+   if (strcmp(mem->desc, "flash") == 0) {
+      if ((addr & 1) == 1) {
+        /* odd address = high byte */
+@@ -2445,7 +2445,7 @@
+      if (pgm->flag & PGM_FL_IS_DW)
+        unsupp = 1;
+   } else if (strcmp(mem->desc, "eeprom") == 0) {
+-    cmd[1] = ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI) ) ? MTYPE_EEPROM_XMEGA: MTYPE_EEPROM;
++    cmd[1] = ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI) ) ? MTYPE_EEPROM_XMEGA: MTYPE_EEPROM;
+     need_progmode = 0;
+     PDATA(pgm)->eeprom_pageaddr = (unsigned long)-1L;
+   } else if (strcmp(mem->desc, "lfuse") == 0) {
+@@ -2751,7 +2751,7 @@
+ 
+ static unsigned char jtagmkII_memtype(PROGRAMMER * pgm, AVRPART * p, unsigned long addr)
+ {
+-  if ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI) ) {
++  if ( p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI) ) {
+     if (addr >= PDATA(pgm)->boot_start)
+       return MTYPE_BOOT_FLASH;
+     else
+@@ -2767,7 +2767,7 @@
+    * Xmega devices handled by V7+ firmware don't want to be told their
+    * m->offset within the write memory command.
+    */
+-  if (PDATA(pgm)->fwver >= 0x700 && (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI)) != 0) {
++  if (PDATA(pgm)->fwver >= 0x700 && (p->flags & (AVRPART_HAS_PDI | AVRPART_HAS_UPDI | AVRPART_HAS_TPI)) != 0) {
+     if (addr >= PDATA(pgm)->boot_start)
+       /*
+        * all memories but "flash" are smaller than boot_start anyway, so
