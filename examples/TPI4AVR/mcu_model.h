@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2022
  *
  */
+#pragma once
 
 #undef AVR_NANO_4809_328MODE
 
@@ -78,6 +79,12 @@
   || defined(__AVR_AVR128DB32__) \
   || defined(__AVR_AVR128DB48__) \
   || defined(__AVR_AVR128DB64__) \
+  || defined(__AVR_AVR16DD28__) \
+  || defined(__AVR_AVR16DD32__) \
+  || defined(__AVR_AVR32DD28__) \
+  || defined(__AVR_AVR32DD32__) \
+  || defined(__AVR_AVR64DD28__) \
+  || defined(__AVR_AVR64DD32__) \
   )
   #define __AVR_DX__
   #define __AVR_DB__
@@ -95,7 +102,8 @@
   #define __AVR_MEGA_TINY__
   #define __AVR_TINY_2X__
 #else
-  #assert "This MCU family is not supported"
+  #assert This MCU family is not supported
+  #include BUILD_STOP
 #endif
 
 // end of code

@@ -28,7 +28,7 @@ void USART::change_baudrate (volatile USART_t *hwserial_module, uint32_t baud_re
       (*hwserial_module).CTRLB &= ~(USART_RXMODE_CLK2X_gc);
     }
     #if defined(__AVR_MEGA_0X__)
-    int8_t sigrow_val = (FUSE.OSCCFG & FUSE_FREQSEL_gm) == FUSE_FREQSEL1_bm ? SIGROW.OSC20ERR5V : SIGROW.OSC16ERR5V;
+    int8_t sigrow_val = (FUSE.OSCCFG & FUSE_FREQSEL_gm) == 2 ? SIGROW.OSC20ERR5V : SIGROW.OSC16ERR5V;
     baud_reg += (((uint32_t)baud_reg * sigrow_val) >> 10);
     #endif
   }

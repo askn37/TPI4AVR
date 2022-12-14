@@ -44,11 +44,7 @@ void TPI::setup (void) {
   USART::setup(
     &TPI_USART_MODULE,
     USART::calc_baudrate_synchronous(TPI_USART_BAUDRATE),
-    #if defined(USART_RS4851_bm)
-    (USART_LBME_bm | USART_RS485_EXT_gc | USART_RS485_INT_gc),
-    #else
-    (USART_LBME_bm | USART_RS485_ENABLE_gc),
-    #endif
+    (USART_LBME_bm | 0x03),
     (USART_TXEN_bm | USART_RXEN_bm | USART_ODME_bm | USART_RXMODE_NORMAL_gc),
     (USART_CHSIZE_8BIT_gc | USART_PMODE_EVEN_gc | USART_CMODE_SYNCHRONOUS_gc | USART_SBMODE_2BIT_gc)
   );
