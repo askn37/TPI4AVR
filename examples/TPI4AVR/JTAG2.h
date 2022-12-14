@@ -8,6 +8,9 @@
  * @copyright Copyright (c) 2022
  *
  */
+#pragma once
+#include <util/atomic.h>
+#include <util/crc16.h>
 #include <string.h>
 #include <setjmp.h>
 #include "configuration.h"

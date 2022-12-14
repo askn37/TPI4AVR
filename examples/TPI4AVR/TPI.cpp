@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2022
  *
  */
+#include <avr/interrupt.h>
 #include <setjmp.h>
 #include "sys.h"
 #include "TPI.h"
