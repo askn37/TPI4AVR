@@ -20,6 +20,12 @@ For ATtiny4/5/9/10 series from using avrdude, Arduino IDE\
   - デバッガ機能なし（メモリプログラミング＆FUSE書換専用）
 - 高電圧プログラミングに実験的対応（要ハードウェア支援）
 
+### TPI4AVR hardware
+
+[<img src="https://askn37.github.io/product/TPI4AVR/2222_Zinnia-TPI4AVRF-MZU2217B/Zinnia-TPI4AVRF-MZU2217B_top.svg" width="160">](https://askn37.github.io/product/TPI4AVR/2222_Zinnia-TPI4AVRF-MZU2217B/Zinnia-TPI4AVRF-MZU2217B_top.svg)
+
+[[ハードウェアとしての TPI4AVR の紹介はこちら]](https://askn37.github.io/product/TPI4AVR)
+
 ## Arduino IDE への導入
 
 [askn37 / Multix Zinnia Product SDK](https://askn37.github.io/)をインストール済の場合、
