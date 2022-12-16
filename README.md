@@ -1,4 +1,4 @@
-# TPI4AVR
+# TPI4AVR (Rev.1)
 
 TPI (Tiny Programing Interface) host firmware over serial\
 For ATtiny4/5/9/10 series from using avrdude, Arduino IDE\
@@ -22,12 +22,20 @@ For ATtiny4/5/9/10 series from using avrdude, Arduino IDE\
 
 ## Arduino IDE への導入
 
-1. .ZIPアーカイブをダウンロードする。[Click here](https://github.com/askn37/TPI4AVR/archive/master.zip)
+[askn37 / Multix Zinnia Product SDK](https://askn37.github.io/)をインストール済の場合、
+このライブラリは既に用意されている。
+
+- `ファイル` -> `スケッチ例` -> `UPDI4AVR` を選ぶ\
+  重要！__ビルド可能なボード選択をしていなければ、メニューにこの選択肢は表示されない__
+
+そうでなければ次のようにする。
+
+1. .ZIPアーカイブをダウンロードする。[Click here](https://github.com/askn37/UPDI4AVR/archive/master.zip)
 1. ライブラリマネージャで読み込む\
-    スケッチ -> ライブラリをインクルード -> .ZIP形式のライブラリをインストール...
-1. ツールメニューのボード選択で、UPDIホストにする 適切なターゲットを選ぶ
-1. ファイルメニューのスケッチ例から、TPI4AVRを選ぶ\
-    重要！__ビルド可能なボードを選択をしていなければ、メニューにこの選択肢は表示されない__
+  `スケッチ` -> `ライブラリをインクルード` -> `.ZIP形式のライブラリをインストール...`
+1. ツールメニューのボード選択で、UPDIホストにする 適切なターゲットを選ぶ（次節）
+1. `ファイル` -> `スケッチ例` -> `UPDI4AVR` を選ぶ\
+  重要！__ビルド可能なボード選択をしていなければ、メニューにこの選択肢は表示されない__
 
 ## ライタホストに選択可能なボード種別
 
@@ -36,7 +44,7 @@ For ATtiny4/5/9/10 series from using avrdude, Arduino IDE\
 megaAVR-0 シリーズ、tinyAVR-2 シリーズ、AVR DA/DB シリーズのうち、
 
 - 8KB 以上の FLASH 領域
-- 2KB 以上の SRAM 容量
+- 1KB 以上の SRAM 容量
 - 2組の ハードウェアUSART サポート
 
 を有していること。
@@ -84,6 +92,14 @@ megaAVR-0 シリーズ、tinyAVR-2 シリーズ、AVR DA/DB シリーズのう�
 サブメニューで主クロック設定が可能な場合は、\
 16Mhz、20Mhz、24Mhz (オーバークロック時 28Mhz、32Mhz) から選択する。
 
+### Arduino Nano Every について
+
+オンボード搭載プログラムライタチップが JTAG2UPDI over UART 下位互換の特殊品である。
+UPDI4AVR を書き込んでも制御が横取りされるために期待した動作をしないことが多い。
+
+> オンボードUSB を使わずに追加の UART を JTAG通信用に別途用意し、DTR/RTS信号も配線すれば良いが
+ほぼ同じ部材で SerialUPDI 書込器を作れてしまうので、それだと価値がない。
+
 ## TPIターゲットに選択可能なAVR品種
 
 - ATtiny4/5/9/10
@@ -91,6 +107,14 @@ megaAVR-0 シリーズ、tinyAVR-2 シリーズ、AVR DA/DB シリーズのう�
 - ATtiny102/104
 
 > この8品種しか TPI方式対応型番は存在しないようだ。
+
+## Arudiuino IDE 上への TPI開発環境構築
+
+[Multix Zinnia Product SDK [reduceAVR]](https://github.com/askn37/multix-zinnia-sdk-reduceAVR)
+の導入が最も簡易。
+
+- 元々 TPI4AVR はこのSDKから使うために設計されているので。
+- 開発に必要なバージョンの AVR-GCC AVR-LIBC avrdude toolkit が簡単に揃う。
 
 ## 基本的な使い方
 
@@ -204,14 +228,6 @@ Fig.3 HV Switching
 HV書込時は 12V HIGH を維持し続けなければならない。
 （これはPDIも同じ。UPDIは全く違う）
 
-## Arudiuino IDE 上への TPI開発環境構築
-
-[Multix Zinnia Product SDK [reduceAVR]](https://github.com/askn37/multix-zinnia-sdk-reduceAVR)
-の導入が最も簡易。
-
-- 元々 TPI4AVR はこのSDKから使うために設計されているので。
-- 開発に必要なバージョンの AVR-GCC AVR-LIBC avrdude が簡単に揃う。
-
 ## 注意
 
 - AS IS（無保証、無サポート、使用は自己責任で）
@@ -227,7 +243,7 @@ EEPROM書換などの高度な指示をすることは原則出来ない。
 - デバッガインタフェースとしては機能しない。特殊領域書換とチップ消去にのみ対応。
 - 高電圧プログラミングには、追加のハードウェア支援が絶対に必要。（必然的に）
 
-## うまく動かない場合
+### うまく動かない場合
 
 - メニュー設定を確認する
   - AVR のボードマネージャー種別
