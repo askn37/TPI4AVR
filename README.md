@@ -31,16 +31,16 @@ For ATtiny4/5/9/10 series from using avrdude, Arduino IDE\
 [askn37 / Multix Zinnia Product SDK](https://askn37.github.io/)をインストール済の場合、
 このライブラリは既に用意されている。
 
-- `ファイル` -> `スケッチ例` -> `UPDI4AVR` を選ぶ\
+- `ファイル` -> `スケッチ例` -> `TPI4AVR` を選ぶ\
   重要！__ビルド可能なボード選択をしていなければ、メニューにこの選択肢は表示されない__
 
 そうでなければ次のようにする。
 
-1. .ZIPアーカイブをダウンロードする。[Click here](https://github.com/askn37/UPDI4AVR/archive/master.zip)
+1. .ZIPアーカイブをダウンロードする。[Click here](https://github.com/askn37/TPI4AVR/archive/master.zip)
 1. ライブラリマネージャで読み込む\
   `スケッチ` -> `ライブラリをインクルード` -> `.ZIP形式のライブラリをインストール...`
-1. ツールメニューのボード選択で、UPDIホストにする 適切なターゲットを選ぶ（次節）
-1. `ファイル` -> `スケッチ例` -> `UPDI4AVR` を選ぶ\
+1. ツールメニューのボード選択で、TPIホストにする 適切なターゲットを選ぶ（次節）
+1. `ファイル` -> `スケッチ例` -> `TPI4AVR` を選ぶ\
   重要！__ビルド可能なボード選択をしていなければ、メニューにこの選択肢は表示されない__
 
 ## ライタホストに選択可能なボード種別
